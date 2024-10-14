@@ -60,10 +60,8 @@ router.post('/apply-job', async (req, res) => {
 
     try {
         // Fetch job data from the other application (optional)
-        const jobResponse = await axios.get(`http://localhost:3000/jobs/${jobId}`);
+        const jobResponse = await axios.get(`http://localhost:3001/jobs/${jobId}`);
         const jobData = jobResponse.data;
-
-        
 
         // Check if the job exists
         if (!jobData) {
@@ -75,11 +73,7 @@ router.post('/apply-job', async (req, res) => {
             { $addToSet: { appliedJobs: jobId } },);
 
         // Update the number of applicants for the job
-        await axios.patch(`http:/localhost:3000/jobs/${jobId}/apply`, {
-            increment: 1
-        });
-
-        // You can also save the application in your database here if needed
+        await axios.patch(`http:/localhost:3001/jobs/${jobId}/apply`, {});
 
         res.status(200).json({
             message: "Application submitted successfully!",
@@ -92,9 +86,8 @@ router.post('/apply-job', async (req, res) => {
 
 router.get('/jobs', async (req, res) => {
     try {
-        const response = await axios.get('http://localhost:3000/jobs'); // URL of the other application
+        const response = await axios.get('http://localhost:3001/jobs'); // URL of the other application
         const jobs = response.data; // Assuming the response contains job data
-
         res.status(200).json(jobs);
     } catch (err) {
         res.status(500).json({ message: "Error fetching jobs", error: err.message });

@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://0.0.0.0:27017/jobUser', {
+mongoose.connect('mongodb://0.0.0.0:27017/user', {
     useNewUrlParser:true,
     useUnifiedTopology:true,
 })

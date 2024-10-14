@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     userHighestDegree:{type:String,required:true},
     userExperience:{type:Number,required:true},
     userSkills:{type:String,required:true},
+    appliedJobs: [String],
 
 })
 

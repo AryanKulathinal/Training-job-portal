@@ -14,7 +14,7 @@ mongoose.connect('mongodb://0.0.0.0:27017/user', {
 .then(()=> console.log('MongoDB connected'))
 .catch(err => console.log(err));
 
-app.use('/api/v1/jobuserRoutes',jobUserRoutes);
+app.use('/api/v1/job-user',jobUserRoutes);
 
 app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`);

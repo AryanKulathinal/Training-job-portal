@@ -38,7 +38,7 @@ router.post('/',async(req,res)=>{
 
 });
 
-router.get('/:userId', async (req, res) => {
+router.get('/user/:userId', async (req, res) => {
     const { userId } = req.params; // Get userId from the request parameters
 
     try {

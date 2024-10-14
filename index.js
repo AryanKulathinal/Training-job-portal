@@ -78,6 +78,48 @@ app.delete('/jobs/:id',(req,res)=>{
     });
 });
 
+app.put('/jobs/apply', (req, res) => {
+    const { user_id, job_id } = req.body;
+
+    if (!user_id || !job_id) {
+        return res.status(400).send('User ID and Job ID are required');
+    }
+
+    // Step 1: Fetch the job based on job_id
+    const selectSql = 'SELECT APPLICANTS FROM JOBS WHERE ID = ?';
+    db.query(selectSql, [job_id], (err, result) => {
+        if (err) {
+            return res.status(500).send('Error fetching the job');
+        }
+
+        if (result.length === 0) {
+            return res.status(404).send('Job not found');
+        }
+
+        // Step 2: Parse the applicants list (assumed to be stored as a JSON array)
+        let applicants = JSON.parse(result[0].APPLICANTS || '[]');
+
+        // Step 3: Append the new user_id to the applicants list (if not already added)
+        if (!applicants.includes(user_id)) {
+            applicants.push(user_id);
+        } else {
+            return res.status(400).send('User already applied for this job');
+        }
+
+        // Step 4: Update the job with the new applicants list
+        const updateSql = 'UPDATE JOBS SET APPLICANTS = ? WHERE ID = ?';
+        db.query(updateSql, [JSON.stringify(applicants), job_id], (err, result) => {
+            if (err) {
+                return res.status(500).send('Error updating the job');
+            }
+
+            res.send('User applied successfully');
+        });
+    });
+});
+
+
+
 app.listen(port,()=>{
     console.log(`Server running on port ${port}`);
 });

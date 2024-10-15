@@ -59,7 +59,7 @@ app.get('/jobs/:id',(req,res)=>{
 });
 
 
-app.put('/jobs/:id', (req, res) => {
+app.put('/jobs/change/:id', (req, res) => {
     const { name, qualification, desc, vacancies } = req.body;
     const sql = 'UPDATE JOBS SET NAME = ?, QUALIFICATION = ?, DESCRIPTION = ?, VACANCIES = ? WHERE ID = ?';
     const values = [name, qualification, desc, vacancies, req.params.id];
@@ -79,8 +79,9 @@ app.delete('/jobs/:id',(req,res)=>{
 });
 
 app.put('/jobs/apply', (req, res) => {
-    const { user_id, job_id } = req.body;
+    const { user_id, job_id } = req.data;
 
+    // Validate that both user_id and job_id are provided
     if (!user_id || !job_id) {
         return res.status(400).send('User ID and Job ID are required');
     }
@@ -97,7 +98,12 @@ app.put('/jobs/apply', (req, res) => {
         }
 
         // Step 2: Parse the applicants list (assumed to be stored as a JSON array)
-        let applicants = JSON.parse(result[0].APPLICANTS || '[]');
+        let applicants;
+        try {
+            applicants = JSON.parse(result.APPLICANTS || '[]');
+        } catch (parseError) {
+            return res.status(500).send('Error parsing applicants data');
+        }
 
         // Step 3: Append the new user_id to the applicants list (if not already added)
         if (!applicants.includes(user_id)) {

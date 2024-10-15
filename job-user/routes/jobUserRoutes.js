@@ -40,13 +40,11 @@ router.post('/',async(req,res)=>{
 
 router.get('/user/:userId', async (req, res) => {
     const { userId } = req.params; // Get userId from the request parameters
-
     try {
         const user = await User.findOne({ userId }); // Find the user by userId
         if (!user) {
             return res.status(404).json({ message: "User not found" }); // If not found, return 404
         }
-
         res.status(200).json(user); // Return the user details
     } catch (err) {
         res.status(500).json({ message: "Error fetching user details", error: err.message });
@@ -57,36 +55,29 @@ router.get('/user/:userId', async (req, res) => {
 
 router.post('/apply-job', async (req, res) => {
     const {  userId,jobId } = req.body;
-
     try {
-        // Fetch job data from the other application (optional)
-        
+        // Fetch job data from the other application (optional)  
         const jobResponse = await axios.get(`http://localhost:3001/jobs/${jobId}`);
         const jobData = jobResponse.data;
-      
-
         // Check if the job exists
         if (!jobData) {
             return res.status(404).json({ message: "Job not found" });
         }
-       
         await User.findOneAndUpdate(
             { userId: userId },
             { $addToSet: { appliedJobs: jobId } },);
-       
-
         // Update the number of applicants for the job
         const url = `http://localhost:3001/jobs/apply`;
         const data = { user_id:userId, job_id:jobId};
         await axios.put(url,data);
         res.status(200).json({
             message: "Application submitted successfully!",
-            job: jobData
         });
     } catch (err) {
         res.status(500).json({ message: "Error applying for job", error: err.message });
     }
 });
+
 
 router.get('/jobs', async (req, res) => {
     try {
@@ -97,6 +88,5 @@ router.get('/jobs', async (req, res) => {
         res.status(500).json({ message: "Error fetching jobs", error: err.message });
     }
 });
-
 
 module.exports = router;
